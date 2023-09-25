@@ -1,3 +1,0 @@
-[submodule "mavros_control"]
-	path = mavros_control
-	url = git@github.com:shalabyma/mavros_control.git
