@@ -17,5 +17,6 @@ class MavrosBase{
         bool set_param(std::string param_id, double param);
 
     protected:
+        ros::NodeHandle nh; // ROS node handle
         mavros_msgs::State m_current_state;
 };

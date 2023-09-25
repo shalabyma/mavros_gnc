@@ -16,7 +16,6 @@ class MavrosBase{
 public:
     MavrosBase(int argc, char **argv, std::string& node_name){
         ros::init(argc, argv, node_name);
-        ros::NodeHandle nh;
 
         m_state_sub = nh.subscribe<mavros_msgs::State>
             ("mavros/state", 10, _state_cb);
@@ -118,6 +117,7 @@ public:
 
 
 protected:
+    ros::NodeHandle nh; // ROS node handle
     mavros_msgs::State m_current_state; // The current state of the FCU
 
 private:
