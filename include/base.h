@@ -12,11 +12,10 @@ class MavrosBase{
         bool set_mode(std::string mode, int n_retry = 5);
         bool set_mode(int mode, int n_retry = 5);
         void abort_mission();
-    
+        bool set_rate(int id, int rate);
+        bool get_param(std::string param_id, double& param);
+        bool set_param(std::string param_id, double param);
+
     protected:
         mavros_msgs::State m_current_state;
-        ros::Subscriber m_state_sub;
-        ros::ServiceClient m_arming_client;
-        ros::ServiceClient m_set_mode_client;
-        ros::ServiceClient m_cmd_srv;
 };
