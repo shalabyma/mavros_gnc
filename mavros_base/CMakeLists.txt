@@ -9,6 +9,7 @@ project(mavros_base)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  mavros_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -103,7 +104,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include/${PROJECT_NAME}
  LIBRARIES ${PROJECT_NAME}
- CATKIN_DEPENDS roscpp
+ CATKIN_DEPENDS roscpp mavros_msgs
 #  DEPENDS system_lib
 )
 
