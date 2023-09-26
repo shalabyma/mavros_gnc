@@ -37,7 +37,7 @@ MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
 }
 
 // TODO: Replace with a call to a retry utils function
-bool MavrosBase::arm(int n_retry = 5){
+bool MavrosBase::arm(int n_retry){
     for (int i = 0; i < n_retry; i++){
         if (_arm_toggle(true)){
             return true;
@@ -48,7 +48,7 @@ bool MavrosBase::arm(int n_retry = 5){
 }
 
 // TODO: Replace with a call to a retry utils function
-bool MavrosBase::disarm(int n_retry = 5){
+bool MavrosBase::disarm(int n_retry){
     for (int i = 0; i < n_retry; i++){
         if (_arm_toggle(false)){
             return true;
@@ -58,7 +58,7 @@ bool MavrosBase::disarm(int n_retry = 5){
     return false;
 }
 
-bool MavrosBase::set_mode(std::string mode, int n_retry = 5){
+bool MavrosBase::set_mode(std::string mode, int n_retry){
     mavros_msgs::SetMode set_mode;
     set_mode.request.custom_mode = mode;
 
