@@ -27,7 +27,9 @@ class MavrosBase{
         ros::ServiceClient m_get_param_srv; // Service client for getting parameters
         ros::ServiceClient m_set_param_srv; // Service client for setting parameters
 
-        static void _state_cb(const mavros_msgs::State::ConstPtr& msg);
+        static void _state_cb(
+            const mavros_msgs::State::ConstPtr& msg, mavros_msgs::State& state
+        );
         bool _arm_toggle(bool arm);
         bool _kill_motors();
 };

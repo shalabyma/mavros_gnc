@@ -16,7 +16,7 @@ MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
     ros::init(argc, argv, node_name);
 
     m_state_sub = nh.subscribe<mavros_msgs::State>
-        ("mavros/state", 10, _state_cb);
+        ("mavros/state", 10, boost::bind(&_state_cb, _1, m_current_state));
     m_arming_srv = nh.serviceClient<mavros_msgs::CommandBool>
         ("mavros/cmd/arming");
     m_set_mode_srv = nh.serviceClient<mavros_msgs::SetMode>
@@ -122,8 +122,10 @@ bool MavrosBase::set_param(std::string param_id, double param){
     }
 }
 
-void MavrosBase::_state_cb(const mavros_msgs::State::ConstPtr& msg){
-    m_current_state = *msg;
+void MavrosBase::_state_cb(
+    const mavros_msgs::State::ConstPtr& msg, mavros_msgs::State& state
+){
+    state = *msg;
 }
 
 bool MavrosBase::_arm_toggle(bool arm){
