@@ -13,8 +13,6 @@
 #include <mavros_msgs/ParamSet.h>
 
 MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
-    ros::init(argc, argv, node_name);
-
     m_state_sub = nh.subscribe<mavros_msgs::State>
         ("mavros/state", 10, boost::bind(&_state_cb, _1, m_current_state));
     m_arming_srv = nh.serviceClient<mavros_msgs::CommandBool>
@@ -30,13 +28,15 @@ MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
     m_set_param_srv = nh.serviceClient<mavros_msgs::ParamSet>
         ("mavros/param/set");
 
+    // TODO: we need this back
     // Wait for FCU connection
-    while(ros::ok() && !m_current_state.connected){
-        ros::spinOnce();
-    }
+    // while(ros::ok() && !m_current_state.connected){
+    //     ros::spinOnce();
+    // }
 }
 
 // TODO: Replace with a call to a retry utils function
+// TODO: Check if already armed
 bool MavrosBase::arm(int n_retry){
     for (int i = 0; i < n_retry; i++){
         if (_arm_toggle(true)){
@@ -48,6 +48,7 @@ bool MavrosBase::arm(int n_retry){
 }
 
 // TODO: Replace with a call to a retry utils function
+// TODO: Check if already disarmed
 bool MavrosBase::disarm(int n_retry){
     for (int i = 0; i < n_retry; i++){
         if (_arm_toggle(false)){

@@ -29,12 +29,13 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
 
     /* ------------------------ Publishers ------------------------ */
     m_setpoint_pub = nh.advertise<mavros_msgs::PositionTarget>
-        ("mavros/setpoint_position/local", 10);
+        ("mavros/setpoint_raw/local", 10);
 
     /* ------------------------ Services ------------------------ */
 
 
     /* ------------------------ Start thread ------------------------ */
+    command_pos(0, 0, 2, 0);
     std::thread t{&ControllerBase::_stream_setpoints, this};
 
     sleep(2);
@@ -43,6 +44,9 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
     // TODO:TO BE REMOVED
     sleep(5);
     arm();
+    while (ros::ok()){
+        ros::spinOnce();
+    }
 }
 
 /* ------------------------ Public methods ------------------------ */
@@ -100,6 +104,7 @@ void ControllerBase::_stream_setpoints(){
 }
 
 int main(int argc, char **argv){
+    ros::init(argc, argv, "controller");
     ControllerBase controller(argc, argv);
     ros::spin();
     return 0;
