@@ -23,8 +23,8 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
     set_rate(ATTITUDE_QUATERNION_ID, 10);
 
     /* ------------------------ Subscribers ------------------------ */
-    ros::Subscriber pose_sub = nh.subscribe<mavros_msgs::State>
-        ("mavros/state", 5, _pose_cb);
+    ros::Subscriber pose_sub = nh.subscribe<geometry_msgs::PoseStamped>
+        ("mavros/local_position/pose", 5, boost::bind(&_pose_cb, _1, m_pose));
 
     /* ------------------------ Publishers ------------------------ */
     m_setpoint_pub = nh.advertise<mavros_msgs::PositionTarget>
@@ -34,7 +34,7 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
 
 
     /* ------------------------ Start thread ------------------------ */
-    std::thread t{_stream_setpoints};
+    std::thread t{&ControllerBase::_stream_setpoints, this};
 
     sleep(2);
     set_mode("OFFBOARD");
@@ -46,9 +46,9 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
 
 void ControllerBase::_pose_cb(
     const geometry_msgs::PoseStamped::ConstPtr& msg, 
-    geometry_msgs::PoseStamped& m_pose
+    geometry_msgs::PoseStamped& pose
 ){
-    m_pose = *msg;
+    pose = *msg;
 }
 
 void ControllerBase::_stream_setpoints(){

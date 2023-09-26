@@ -19,10 +19,10 @@ protected:
 private:
     ros::Publisher m_setpoint_pub;
 
-    void _pose_cb(
+    static void _pose_cb(
         const geometry_msgs::PoseStamped::ConstPtr& msg, 
-        geometry_msgs::PoseStamped& m_pose
-    ){}
+        geometry_msgs::PoseStamped& pose
+    );
 
     void _stream_setpoints();
 };
