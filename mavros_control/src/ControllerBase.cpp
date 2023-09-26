@@ -14,6 +14,7 @@
 #define ATTITUDE_ID 30
 #define ATTITUDE_QUATERNION_ID 31
 
+/* ------------------------ Constructor ------------------------ */
 ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
     : MavrosBase(argc, argv, node_name){
 
@@ -44,6 +45,42 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
     arm();
 }
 
+/* ------------------------ Public methods ------------------------ */
+void ControllerBase::command_vel(double vx, double vy, double vz, double yaw_rate){
+    m_setpoint.coordinate_frame = mavros_msgs::PositionTarget::FRAME_BODY_NED;
+    m_setpoint.type_mask = 
+        mavros_msgs::PositionTarget::IGNORE_PX |
+        mavros_msgs::PositionTarget::IGNORE_PY |
+        mavros_msgs::PositionTarget::IGNORE_PZ |
+        mavros_msgs::PositionTarget::IGNORE_AFX |
+        mavros_msgs::PositionTarget::IGNORE_AFY |
+        mavros_msgs::PositionTarget::IGNORE_AFZ |
+        mavros_msgs::PositionTarget::FORCE |
+        mavros_msgs::PositionTarget::IGNORE_YAW;
+    m_setpoint.velocity.x = vx;
+    m_setpoint.velocity.y = vy;
+    m_setpoint.velocity.z = vz;
+    m_setpoint.yaw_rate = yaw_rate;
+}
+
+void ControllerBase::command_pos(double x, double y, double z, double yaw){
+    m_setpoint.coordinate_frame = mavros_msgs::PositionTarget::FRAME_LOCAL_NED;
+    m_setpoint.type_mask = 
+        mavros_msgs::PositionTarget::IGNORE_VX |
+        mavros_msgs::PositionTarget::IGNORE_VY |
+        mavros_msgs::PositionTarget::IGNORE_VZ |
+        mavros_msgs::PositionTarget::IGNORE_AFX |
+        mavros_msgs::PositionTarget::IGNORE_AFY |
+        mavros_msgs::PositionTarget::IGNORE_AFZ |
+        mavros_msgs::PositionTarget::FORCE |
+        mavros_msgs::PositionTarget::IGNORE_YAW_RATE;
+    m_setpoint.position.x = x;
+    m_setpoint.position.y = y;
+    m_setpoint.position.z = z;
+    m_setpoint.yaw = yaw;
+}
+
+/* ------------------------ Private methods ------------------------ */
 void ControllerBase::_pose_cb(
     const geometry_msgs::PoseStamped::ConstPtr& msg, 
     geometry_msgs::PoseStamped& pose

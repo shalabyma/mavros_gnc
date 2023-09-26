@@ -12,6 +12,10 @@ class ControllerBase: public MavrosBase{
 public:
     ControllerBase(int argc, char **argv, std::string node_name = "controller");
 
+    // TODO: is there need for command_yaw_rate and command_yaw separately?
+    void command_vel(double vx=0, double vy=0, double vz=0, double yaw_rate=0);
+    void command_pos(double x=0, double y=0, double z=0, double yaw=0);
+
 protected:
     geometry_msgs::PoseStamped m_pose;
     mavros_msgs::PositionTarget m_setpoint;
