@@ -184,8 +184,3 @@ bool MavrosBase::_kill_motors(){
         return false;
     }
 }
-
-// TODO: remove this
-int main(){
-    return 0;
-}
