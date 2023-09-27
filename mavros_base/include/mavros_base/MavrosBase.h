@@ -9,7 +9,7 @@ class MavrosBase{
         bool arm(int n_retry=5);
         bool disarm(int n_retry=5);
         bool set_mode(std::string mode, int n_retry=5);
-        void abort_mission();
+        void abort_mission(bool immediate=false);
         bool set_rate(int id, int rate);
         bool get_param(std::string param_id, double& param);
         bool set_param(std::string param_id, double param);

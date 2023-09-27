@@ -76,11 +76,18 @@ bool MavrosBase::set_mode(std::string mode, int n_retry){
     return false;
 }
 
-void MavrosBase::abort_mission(){
-    ROS_INFO("Aborting mission. Executing emergency landing...");
-    if (!set_mode("AUTO.LAND", 3)){
-        ROS_ERROR("Failed at emergency landing, killing motors immediately!");
+void MavrosBase::abort_mission(bool immediately){
+    if (immediately){
+        ROS_INFO("Aborting mission. Killing motors immediately!");
         _kill_motors();
+        return;
+    }
+    else{
+        ROS_INFO("Aborting mission. Executing emergency landing...");
+        if (!set_mode("AUTO.LAND", 3)){
+            ROS_ERROR("Failed at emergency landing, killing motors immediately!");
+            _kill_motors();
+        }
     }
 }
 
@@ -126,6 +133,7 @@ bool MavrosBase::set_param(std::string param_id, double param){
 void MavrosBase::_state_cb(
     const mavros_msgs::State::ConstPtr& msg, mavros_msgs::State& state
 ){
+    ROS_INFO("Woof");
     state = *msg;
 }
 
