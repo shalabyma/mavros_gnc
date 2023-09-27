@@ -13,6 +13,7 @@
 #include <mavros_msgs/ParamSet.h>
 
 MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
+    /* ------------------------ Subscribers ------------------------ */
     m_state_sub = nh.subscribe<mavros_msgs::State>
         (
             "mavros/state", 
@@ -21,6 +22,25 @@ MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
                 &MavrosBase::_state_cb, boost::placeholders::_1, boost::ref(m_current_state)
             )
         );
+
+    /* ------------------------ Services ------------------------ */
+    int service_timeout = 1e3; // timeout in ms
+    try{
+        ros::service::waitForService("mavros/cmd/arming", service_timeout);
+        ros::service::waitForService("mavros/set_mode", service_timeout);
+        ros::service::waitForService("mavros/cmd/command", service_timeout);
+        ros::service::waitForService("mavros/set_message_interval", service_timeout);
+        ros::service::waitForService("mavros/param/get", service_timeout);
+        ros::service::waitForService("mavros/param/set", service_timeout);
+        ROS_INFO("Connected to basic services!");
+    }
+    catch(ros::Exception& e){
+        ROS_ERROR(
+            "Failed to connect to basic services. Ensure MAVROS is running and connected!"
+        );
+        ros::shutdown();
+    }
+
     m_arming_srv = nh.serviceClient<mavros_msgs::CommandBool>
         ("mavros/cmd/arming");
     m_set_mode_srv = nh.serviceClient<mavros_msgs::SetMode>
@@ -34,11 +54,10 @@ MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
     m_set_param_srv = nh.serviceClient<mavros_msgs::ParamSet>
         ("mavros/param/set");
 
-    // TODO: we need this back
     // Wait for FCU connection
-    // while(ros::ok() && !m_current_state.connected){
-    //     ros::spinOnce();
-    // }
+    while(ros::ok() && !m_current_state.connected){
+        ros::spinOnce();
+    }
 }
 
 // TODO: Replace with a call to a retry utils function
@@ -75,7 +94,7 @@ bool MavrosBase::set_mode(std::string mode, int n_retry){
         if( m_current_state.mode != mode){
             if( m_set_mode_srv.call(set_mode) &&
                 set_mode.response.mode_sent){
-                ROS_INFO("%s enabled", mode);
+                ROS_INFO("%s enabled", mode.c_str());
                 return true;
             }
         }

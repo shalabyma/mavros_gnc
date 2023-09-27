@@ -25,14 +25,13 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
     set_rate(ATTITUDE_QUATERNION_ID, 10);
 
     /* ------------------------ Subscribers ------------------------ */
-    ros::Subscriber pose_sub = nh.subscribe<geometry_msgs::PoseStamped>
-        (
-            "mavros/local_position/pose", 
-            10, 
-            boost::bind(
-                &ControllerBase::_pose_cb, boost::placeholders::_1 , boost::ref(m_pose)
-            )
-        );
+    ros::Subscriber pose_sub = nh.subscribe<geometry_msgs::PoseStamped>(
+        "mavros/local_position/pose", 
+        10, 
+        boost::bind(
+            &ControllerBase::_pose_cb, boost::placeholders::_1 , boost::ref(m_pose)
+        )
+    );
 
     /* ------------------------ Publishers ------------------------ */
     m_setpoint_pub = nh.advertise<mavros_msgs::PositionTarget>
@@ -45,11 +44,18 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
     command_vel(0, 0, 0, 0);
     std::thread t{&ControllerBase::_stream_setpoints, this};
 
-    sleep(2);
+    ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
+        "mavros/local_position/pose"
+    );
+    ros::topic::waitForMessage<mavros_msgs::PositionTarget>(
+        "mavros/setpoint_raw/local"
+    );
+    sleep(2); // Allow some setpoint commands so OFFBOARD mode is accepted
+    
     set_mode("OFFBOARD");
 
     // TODO:TO BE REMOVED
-    sleep(5);
+    // sleep(5);
     takeoff();
     sleep(5);
     command_pos(4, 2, 2, 0);
@@ -101,6 +107,11 @@ bool ControllerBase::takeoff(float z, time_t timeout){
     arm();
     sleep(2);
     ROS_INFO("Taking off...");
+    while (m_current_state.mode != "OFFBOARD"){
+        ROS_INFO("Waiting for OFFBOARD mode...");
+        ros::spinOnce();
+        sleep(1);
+    }
     command_pos(
         m_pose.pose.position.x, 
         m_pose.pose.position.y, 
