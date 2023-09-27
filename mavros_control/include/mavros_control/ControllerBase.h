@@ -13,8 +13,12 @@ public:
     ControllerBase(int argc, char **argv, std::string node_name = "controller");
 
     // TODO: is there need for command_yaw_rate and command_yaw separately?
-    void command_vel(double vx=0, double vy=0, double vz=0, double yaw_rate=0);
-    void command_pos(double x=0, double y=0, double z=0, double yaw=0);
+    void command_vel(float vx, float vy, float vz, float yaw_rate=0);
+    void command_pos(float x, float y, float z, float yaw=0);
+
+    bool takeoff(float z=1, time_t timeout=20);
+    bool land(time_t timeout=20);
+    bool hold_position();
 
 protected:
     geometry_msgs::PoseStamped m_pose;
@@ -22,6 +26,9 @@ protected:
 
 private:
     ros::Publisher m_setpoint_pub;
+
+    // TODO: Debugging
+    ros::Publisher m_pose_pub;
 
     static void _pose_cb(
         const geometry_msgs::PoseStamped::ConstPtr& msg, 
