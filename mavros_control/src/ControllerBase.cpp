@@ -24,16 +24,15 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
     set_rate(ATTITUDE_ID, 10);
     set_rate(ATTITUDE_QUATERNION_ID, 10);
 
-    // TODO: Debugging
-    m_pose_pub = nh.advertise<geometry_msgs::PoseStamped>
-        ("mavros/local_position/new_pose", 10);
-
     /* ------------------------ Subscribers ------------------------ */
     ros::Subscriber pose_sub = nh.subscribe<geometry_msgs::PoseStamped>
-        ("mavros/local_position/pose", 10, boost::bind(
-            &ControllerBase::_pose_cb, this, _1, boost::ref(m_pose)
-        ));
-    // https://answers.ros.org/question/233450/boost-bind-additional-arguments-to-camerasubscriber-class-method-callback/
+        (
+            "mavros/local_position/pose", 
+            10, 
+            boost::bind(
+                &ControllerBase::_pose_cb, boost::placeholders::_1 , boost::ref(m_pose)
+            )
+        );
 
     /* ------------------------ Publishers ------------------------ */
     m_setpoint_pub = nh.advertise<mavros_msgs::PositionTarget>
@@ -115,6 +114,7 @@ bool ControllerBase::takeoff(float z, time_t timeout){
             ROS_INFO("Takeoff complete.");
             return true;
         }
+        ros::spinOnce();
         rate.sleep();
     }
     ROS_INFO("Takeoff failed.");
@@ -154,7 +154,6 @@ void ControllerBase::_pose_cb(
     geometry_msgs::PoseStamped& pose
 ){
     pose = *msg;
-    ROS_INFO("Meow"); // TODO: Debugging
 }
 
 void ControllerBase::_stream_setpoints(){
@@ -164,9 +163,7 @@ void ControllerBase::_stream_setpoints(){
     while(ros::ok()){
         m_setpoint.header.stamp = ros::Time::now();
         m_setpoint_pub.publish(m_setpoint);
-
-        // TODOL Debugging
-        // m_pose_pub.publish(m_pose);
+        ros::spinOnce();
         rate.sleep();
     }
 }

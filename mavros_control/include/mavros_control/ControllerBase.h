@@ -27,9 +27,6 @@ protected:
 private:
     ros::Publisher m_setpoint_pub;
 
-    // TODO: Debugging
-    ros::Publisher m_pose_pub;
-
     static void _pose_cb(
         const geometry_msgs::PoseStamped::ConstPtr& msg, 
         geometry_msgs::PoseStamped& pose

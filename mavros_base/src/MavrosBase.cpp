@@ -14,7 +14,13 @@
 
 MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
     m_state_sub = nh.subscribe<mavros_msgs::State>
-        ("mavros/state", 10, boost::bind(&_state_cb, _1, m_current_state));
+        (
+            "mavros/state", 
+            10, 
+            boost::bind(
+                &MavrosBase::_state_cb, boost::placeholders::_1, boost::ref(m_current_state)
+            )
+        );
     m_arming_srv = nh.serviceClient<mavros_msgs::CommandBool>
         ("mavros/cmd/arming");
     m_set_mode_srv = nh.serviceClient<mavros_msgs::SetMode>
@@ -42,6 +48,7 @@ bool MavrosBase::arm(int n_retry){
         if (_arm_toggle(true)){
             return true;
         }
+        ros::spinOnce();
         sleep(1);
     }
     return false;
@@ -54,6 +61,7 @@ bool MavrosBase::disarm(int n_retry){
         if (_arm_toggle(false)){
             return true;
         }
+        ros::spinOnce();
         sleep(1);
     }
     return false;
@@ -71,6 +79,7 @@ bool MavrosBase::set_mode(std::string mode, int n_retry){
                 return true;
             }
         }
+        ros::spinOnce();
         sleep(1);
     }
     return false;
@@ -133,7 +142,6 @@ bool MavrosBase::set_param(std::string param_id, double param){
 void MavrosBase::_state_cb(
     const mavros_msgs::State::ConstPtr& msg, mavros_msgs::State& state
 ){
-    ROS_INFO("Woof");
     state = *msg;
 }
 
