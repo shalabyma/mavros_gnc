@@ -5,7 +5,7 @@
 
 class MavrosBase{
     public: 
-        MavrosBase(int argc, char **argv, std::string& node_name);
+        MavrosBase();
         bool arm(int n_retry=5);
         bool disarm(int n_retry=5);
         bool set_mode(std::string mode, int n_retry=5);

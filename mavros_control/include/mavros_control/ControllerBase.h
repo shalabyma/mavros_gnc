@@ -1,4 +1,4 @@
-#include <MavrosBase.h>
+#include "MavrosBase.h"
 #include <geometry_msgs/PoseStamped.h>
 #include <mavros_msgs/PositionTarget.h>
 #include <boost/thread.hpp>
@@ -11,7 +11,7 @@
 
 class ControllerBase: public MavrosBase{
 public:
-    ControllerBase(int argc, char **argv, std::string node_name = "controller");
+    ControllerBase();
 
     // TODO: is there need for command_yaw_rate and command_yaw separately?
     void command_vel(float vx, float vy, float vz, float yaw_rate=0);

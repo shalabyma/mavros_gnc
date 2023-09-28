@@ -11,8 +11,7 @@
 #include <tf/transform_datatypes.h>
 
 /* ------------------------ Constructor ------------------------ */
-ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
-    : MavrosBase(argc, argv, node_name){
+ControllerBase::ControllerBase(): MavrosBase(){
 
     set_rate(HIGHRES_IMU_ID, 250);
     set_rate(DISTANCE_SENSOR_ID, 30);

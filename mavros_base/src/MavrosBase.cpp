@@ -12,7 +12,7 @@
 #include <mavros_msgs/ParamGet.h>
 #include <mavros_msgs/ParamSet.h>
 
-MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
+MavrosBase::MavrosBase(){
     /* ------------------------ Subscribers ------------------------ */
     m_state_sub = nh.subscribe<mavros_msgs::State>(
         "mavros/state", 

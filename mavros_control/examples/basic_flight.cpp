@@ -8,8 +8,7 @@
 
 int main(int argc, char **argv){
     ros::init(argc, argv, "controller");
-    ros::NodeHandle nh;
-    ControllerBase controller(argc, argv);
+    ControllerBase controller;
     controller.takeoff();
     sleep(5);
     controller.command_pos(4, 2, 2, 0);
@@ -17,6 +16,5 @@ int main(int argc, char **argv){
     controller.hold_position();
     sleep(5);
     controller.land();
-    ros::spin();
     return 0;
 }
