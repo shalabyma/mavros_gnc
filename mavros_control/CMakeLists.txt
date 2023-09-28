@@ -124,7 +124,6 @@ include
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/ControllerBase.cpp
-  # examples/basic_flight.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -135,7 +134,7 @@ add_library(${PROJECT_NAME}
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(basic_flight
+add_executable(mvcon_basic_flight_node
   examples/basic_flight.cpp
   # src/offb_node.cpp
 )
@@ -157,7 +156,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Link the executable to the library just created.
-target_link_libraries(basic_flight
+target_link_libraries(mvcon_basic_flight_node
   ${PROJECT_NAME}
 )
 
@@ -193,7 +192,7 @@ install(TARGETS ${PROJECT_NAME}
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
+  # PATTERN ".svn" EXCLUDE
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)

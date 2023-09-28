@@ -1,18 +1,14 @@
 /**
  * @file commands.cpp
  * @brief Tools for sending commands to the PX4 Autopilot via MAVROS in Offboard Mode.
+ * 
+ * #TODO: 
+ * 1) Add support for commanding low-level control inputs
  */
 
 #include "ControllerBase.h"
 #include <std_msgs/Header.h>
 #include <tf/transform_datatypes.h>
-
-
-// Mavlink message IDs
-#define HIGHRES_IMU_ID 105
-#define DISTANCE_SENSOR_ID 132
-#define ATTITUDE_ID 30
-#define ATTITUDE_QUATERNION_ID 31
 
 /* ------------------------ Constructor ------------------------ */
 ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
