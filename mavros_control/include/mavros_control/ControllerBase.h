@@ -1,6 +1,7 @@
 #include <MavrosBase.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <mavros_msgs/PositionTarget.h>
+#include <boost/thread.hpp>
 
 // Mavlink message IDs
 #define HIGHRES_IMU_ID 105
@@ -25,7 +26,9 @@ protected:
     mavros_msgs::PositionTarget m_setpoint;
 
 private:
+    ros::Subscriber m_pose_sub;
     ros::Publisher m_setpoint_pub;
+    boost::thread setpoint_thread;
 
     static void _pose_cb(
         const geometry_msgs::PoseStamped::ConstPtr& msg, 

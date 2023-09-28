@@ -14,14 +14,13 @@
 
 MavrosBase::MavrosBase(int argc, char **argv, std::string& node_name){
     /* ------------------------ Subscribers ------------------------ */
-    m_state_sub = nh.subscribe<mavros_msgs::State>
-        (
-            "mavros/state", 
-            10, 
-            boost::bind(
-                &MavrosBase::_state_cb, boost::placeholders::_1, boost::ref(m_current_state)
-            )
-        );
+    m_state_sub = nh.subscribe<mavros_msgs::State>(
+        "mavros/state", 
+        10, 
+        boost::bind(
+            &MavrosBase::_state_cb, boost::placeholders::_1, boost::ref(m_current_state)
+        )
+    );
 
     /* ------------------------ Services ------------------------ */
     int service_timeout = 1e3; // timeout in ms

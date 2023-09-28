@@ -4,7 +4,6 @@
  */
 
 #include "ControllerBase.h"
-#include <thread>
 #include <std_msgs/Header.h>
 #include <tf/transform_datatypes.h>
 
@@ -24,8 +23,13 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
     set_rate(ATTITUDE_ID, 10);
     set_rate(ATTITUDE_QUATERNION_ID, 10);
 
+    // Wait for some important topics to be published 
+    ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
+        "mavros/local_position/pose"
+    );
+
     /* ------------------------ Subscribers ------------------------ */
-    ros::Subscriber pose_sub = nh.subscribe<geometry_msgs::PoseStamped>(
+    m_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>(
         "mavros/local_position/pose", 
         10, 
         boost::bind(
@@ -42,30 +46,16 @@ ControllerBase::ControllerBase(int argc, char **argv, std::string node_name)
 
     /* ------------------------ Start thread ------------------------ */
     command_vel(0, 0, 0, 0);
-    std::thread t{&ControllerBase::_stream_setpoints, this};
+    setpoint_thread = boost::thread(&ControllerBase::_stream_setpoints, this);
 
-    ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
-        "mavros/local_position/pose"
-    );
+    // Allow some setpoint commands so OFFBOARD mode is accepted
     ros::topic::waitForMessage<mavros_msgs::PositionTarget>(
         "mavros/setpoint_raw/local"
     );
-    sleep(2); // Allow some setpoint commands so OFFBOARD mode is accepted
+    sleep(2);
     
     set_mode("OFFBOARD");
 
-    // TODO:TO BE REMOVED
-    // sleep(5);
-    takeoff();
-    sleep(5);
-    command_pos(4, 2, 2, 0);
-    sleep(5);
-    hold_position();
-    sleep(5);
-    land();
-    // while (ros::ok()){
-    //     ros::spinOnce();
-    // }
 }
 
 /* ------------------------ Public methods ------------------------ */
@@ -177,11 +167,4 @@ void ControllerBase::_stream_setpoints(){
         ros::spinOnce();
         rate.sleep();
     }
-}
-
-int main(int argc, char **argv){
-    ros::init(argc, argv, "controller");
-    ControllerBase controller(argc, argv);
-    ros::spin();
-    return 0;
 }
