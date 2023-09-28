@@ -1,5 +1,4 @@
 #include "MavrosBase.h"
-#include <geometry_msgs/PoseStamped.h>
 #include <mavros_msgs/PositionTarget.h>
 #include <boost/thread.hpp>
 
@@ -22,18 +21,11 @@ public:
     bool hold_position();
 
 protected:
-    geometry_msgs::PoseStamped m_pose;
     mavros_msgs::PositionTarget m_setpoint;
 
 private:
-    ros::Subscriber m_pose_sub;
     ros::Publisher m_setpoint_pub;
     boost::thread setpoint_thread;
-
-    static void _pose_cb(
-        const geometry_msgs::PoseStamped::ConstPtr& msg, 
-        geometry_msgs::PoseStamped& pose
-    );
 
     void _stream_setpoints();
 };

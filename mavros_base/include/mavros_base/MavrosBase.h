@@ -2,6 +2,7 @@
 
 #include <ros/ros.h>
 #include <mavros_msgs/State.h>
+#include <geometry_msgs/PoseStamped.h>
 
 class MavrosBase{
     public: 
@@ -17,8 +18,10 @@ class MavrosBase{
     protected:
         ros::NodeHandle nh; // ROS node handle
         mavros_msgs::State m_current_state; // The current state of the FCU
+        geometry_msgs::PoseStamped m_pose; // The current pose of the robot
 
     private:
+        ros::Subscriber m_pose_sub; // Subscriber to the robot pose
         ros::Subscriber m_state_sub; // Subscriber to the FCU state
         ros::ServiceClient m_arming_srv; // Service client for arming/disarming
         ros::ServiceClient m_set_mode_srv; // Service client for setting the mode
@@ -27,6 +30,10 @@ class MavrosBase{
         ros::ServiceClient m_get_param_srv; // Service client for getting parameters
         ros::ServiceClient m_set_param_srv; // Service client for setting parameters
 
+        static void _pose_cb(
+            const geometry_msgs::PoseStamped::ConstPtr& msg, 
+            geometry_msgs::PoseStamped& pose
+        );
         static void _state_cb(
             const mavros_msgs::State::ConstPtr& msg, mavros_msgs::State& state
         );

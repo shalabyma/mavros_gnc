@@ -13,7 +13,23 @@
 #include <mavros_msgs/ParamSet.h>
 
 MavrosBase::MavrosBase(){
+    
+    // Wait for some important topics to be published 
+    ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
+        "mavros/local_position/pose"
+    );
+    ros::topic::waitForMessage<mavros_msgs::State>(
+        "mavros/state"
+    );
+
     /* ------------------------ Subscribers ------------------------ */
+    m_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>(
+        "mavros/local_position/pose", 
+        10, 
+        boost::bind(
+            &MavrosBase::_pose_cb, boost::placeholders::_1 , boost::ref(m_pose)
+        )
+    );
     m_state_sub = nh.subscribe<mavros_msgs::State>(
         "mavros/state", 
         10, 
@@ -157,6 +173,14 @@ bool MavrosBase::set_param(std::string param_id, double param){
     }
 }
 
+/* ------------------------ Private methods ------------------------ */
+void MavrosBase::_pose_cb(
+    const geometry_msgs::PoseStamped::ConstPtr& msg, 
+    geometry_msgs::PoseStamped& pose
+){
+    pose = *msg;
+}
+
 void MavrosBase::_state_cb(
     const mavros_msgs::State::ConstPtr& msg, mavros_msgs::State& state
 ){
@@ -195,10 +219,10 @@ bool MavrosBase::_kill_motors(){
     cmd.request.param7 = 0.0;
 
     if(m_cmd_srv.call(cmd)){
-        ROS_INFO("Successfully killed motors");
+        ROS_INFO("Successfully killed motors.");
         return true;
     }else{
-        ROS_ERROR("Failed at killing motors");
+        ROS_ERROR("Failed at killing motors.");
         return false;
     }
 }

@@ -18,19 +18,7 @@ ControllerBase::ControllerBase(): MavrosBase(){
     set_rate(ATTITUDE_ID, 10);
     set_rate(ATTITUDE_QUATERNION_ID, 10);
 
-    // Wait for some important topics to be published 
-    ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
-        "mavros/local_position/pose"
-    );
-
     /* ------------------------ Subscribers ------------------------ */
-    m_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>(
-        "mavros/local_position/pose", 
-        10, 
-        boost::bind(
-            &ControllerBase::_pose_cb, boost::placeholders::_1 , boost::ref(m_pose)
-        )
-    );
 
     /* ------------------------ Publishers ------------------------ */
     m_setpoint_pub = nh.advertise<mavros_msgs::PositionTarget>
@@ -145,13 +133,6 @@ bool ControllerBase::hold_position(){
 }
 
 /* ------------------------ Private methods ------------------------ */
-void ControllerBase::_pose_cb(
-    const geometry_msgs::PoseStamped::ConstPtr& msg, 
-    geometry_msgs::PoseStamped& pose
-){
-    pose = *msg;
-}
-
 void ControllerBase::_stream_setpoints(){
     ros::Rate rate = ros::Rate(50);
     m_setpoint.header = std_msgs::Header();
