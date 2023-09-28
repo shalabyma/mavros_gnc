@@ -14,6 +14,7 @@ class MavrosBase{
         bool set_rate(int id, int rate);
         bool get_param(std::string param_id, double& param);
         bool set_param(std::string param_id, double param);
+        // bool set_param(std::string param_id, int param);
 
     protected:
         ros::NodeHandle nh; // ROS node handle

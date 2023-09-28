@@ -14,6 +14,17 @@
 
 MavrosBase::MavrosBase(){
     
+    double num;
+    get_param("EKF2_HGT_MODE", num);
+    get_param("EKF2_AID_MASK", num);
+    get_param("EKF2_EV_DELAY", num);
+    get_param("EKF2_EV_POS_X", num);
+    get_param("EKF2_EV_POS_Y", num);
+    get_param("EKF2_EV_POS_Z", num);
+    get_param("EKF2_MAG_TYPE", num);
+    get_param("EKF2_MAG_TYPE", num);
+    get_param("MAV_ODOM_LP", num);
+
     // Wait for some important topics to be published 
     ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
         "mavros/local_position/pose"
@@ -172,6 +183,19 @@ bool MavrosBase::set_param(std::string param_id, double param){
         return false;
     }
 }
+
+// bool MavrosBase::set_param(std::string param_id, int param){
+//     mavros_msgs::ParamSet param_set;
+//     param_set.request.param_id = param_id;
+//     param_set.request.value.integer = param;
+//     if(m_set_param_srv.call(param_set)){
+//         ROS_INFO("Successfully set parameter %s to %d", param_id.c_str(), param);
+//         return true;
+//     }else{
+//         ROS_ERROR("Failed at setting parameter %s to %d", param_id.c_str(), param);
+//         return false;
+//     }
+// }
 
 /* ------------------------ Private methods ------------------------ */
 void MavrosBase::_pose_cb(
