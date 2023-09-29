@@ -11,6 +11,7 @@
 class NavigationBase: public MavrosBase{
 public:
     NavigationBase();
+    ~NavigationBase();
     void publish_pose(geometry_msgs::PoseStamped pose);
 
 protected:
