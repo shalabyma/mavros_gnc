@@ -13,6 +13,7 @@ class MavrosBase{
         void abort_mission(bool immediate=false);
         bool set_rate(int id, int rate);
         bool get_param(std::string param_id, double& param);
+        bool get_param(std::string param_id, int& param);
         bool set_param(std::string param_id, double param);
         bool set_param(std::string param_id, int param);
 

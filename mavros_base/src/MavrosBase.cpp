@@ -160,6 +160,19 @@ bool MavrosBase::get_param(std::string param_id, double& param){
     }
 }
 
+bool MavrosBase::get_param(std::string param_id, int& param){
+    mavros_msgs::ParamGet param_get;
+    param_get.request.param_id = param_id;
+    if(m_get_param_srv.call(param_get)){
+        param = param_get.response.value.integer;
+        ROS_INFO("Successfully got parameter %s: %d", param_id.c_str(), param);
+        return true;
+    }else{
+        ROS_ERROR("Failed at getting parameter %s", param_id.c_str());
+        return false;
+    }
+}
+
 bool MavrosBase::set_param(std::string param_id, double param){
     mavros_msgs::ParamSet param_set;
     param_set.request.param_id = param_id;
