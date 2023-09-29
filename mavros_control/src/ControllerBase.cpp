@@ -80,7 +80,7 @@ bool ControllerBase::takeoff(float z, time_t timeout){
     arm();
     sleep(2);
     ROS_INFO("Taking off...");
-    while (m_current_state.mode != "OFFBOARD"){
+    while (!ros::isShuttingDown() && m_current_state.mode != "OFFBOARD"){
         ROS_INFO("Waiting for OFFBOARD mode...");
         ros::spinOnce();
         sleep(1);
@@ -93,7 +93,7 @@ bool ControllerBase::takeoff(float z, time_t timeout){
     );
     time_t start_time = time(NULL);
     ros::Rate rate(50.0);
-    while (time(NULL) - start_time < timeout){
+    while (!ros::isShuttingDown() && time(NULL) - start_time < timeout){
         if (m_pose.pose.position.z > (z - 0.1)){
             ROS_INFO("Takeoff complete.");
             return true;
@@ -109,7 +109,7 @@ bool ControllerBase::land(time_t timeout){
     set_mode("AUTO.LAND");
     ROS_INFO("Landing...");
     time_t start_time = time(NULL);
-    while (time(NULL) - start_time < timeout){
+    while (!ros::isShuttingDown() && time(NULL) - start_time < timeout){
         if (m_pose.pose.position.z < 0.05){
             ROS_INFO("Landing complete.");
             return true;
@@ -137,7 +137,7 @@ void ControllerBase::_stream_setpoints(){
     ros::Rate rate = ros::Rate(50);
     m_setpoint.header = std_msgs::Header();
     m_setpoint.header.frame_id = "base_footprint";
-    while(ros::ok()){
+    while(!ros::isShuttingDown()){
         m_setpoint.header.stamp = ros::Time::now();
         m_setpoint_pub.publish(m_setpoint);
         ros::spinOnce();

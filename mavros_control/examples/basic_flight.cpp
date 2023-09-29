@@ -9,11 +9,13 @@
 int main(int argc, char **argv){
     ros::init(argc, argv, "controller");
     ControllerBase controller;
-    controller.takeoff();
+    if(!controller.takeoff())
+        return 0;
     sleep(5);
     controller.command_pos(4, 2, 2, 0);
     sleep(5);
-    controller.hold_position();
+    if (!controller.hold_position())
+        return 0;
     sleep(5);
     controller.land();
     return 0;
