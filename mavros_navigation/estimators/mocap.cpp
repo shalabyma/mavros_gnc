@@ -3,8 +3,17 @@
  * @brief 
  */
 #include "NavigationBase.h"
+#include <signal.h>
 
 bool mocap_available = true;
+NavigationBase* nav_ptr = nullptr;
+
+// TODO: move this inside the class so it can be used by other nodes
+void mySigintHandler(int sig)
+{
+  nav_ptr->~NavigationBase();
+  ros::shutdown();
+}
 
 geometry_msgs::PoseStamped mocap_pose;
 ros::Time last_pose_time;
@@ -15,20 +24,27 @@ void mocap_pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg){
         msg->pose.position.z != 0.0
     ){
         mocap_pose = *msg;
+        mocap_pose.header.frame_id = "map";
         last_pose_time = ros::Time::now();
     }
 }
 
+
+
 int main(int argc, char **argv){
-    ros::init(argc, argv, "mvnav_mocap_node");
+    ros::init(argc, argv, "mvnav_mocap_node", ros::init_options::NoSigintHandler);
     ros::NodeHandle nh;
+
+    // Initialize navigation object
+    NavigationBase nav;
+    nav_ptr = &nav;
+
+    signal(SIGINT, mySigintHandler);
+
     std::string who_am_i = ros::this_node::getNamespace();
     if (who_am_i == "/"){
         who_am_i = "/ifo001/"; //#TODO: replace with an enforced parameter if no namespace
     }
-
-    // Initialize navigation object
-    NavigationBase nav;
 
     // Wait for important topics to be available
     ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
@@ -61,6 +77,8 @@ int main(int argc, char **argv){
             mocap_available = true;
         }
     }
+
+    nav.~NavigationBase();
 
     return 0;
 }

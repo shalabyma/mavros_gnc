@@ -10,8 +10,6 @@
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/State.h>
 
-// TODO: In larger systems, it is often useful to create a new thread which will be in charge of periodically publishing the setpoints.
-
 mavros_msgs::State current_state;
 void state_cb(const mavros_msgs::State::ConstPtr& msg){
     current_state = *msg;
