@@ -3,7 +3,7 @@
 NavigationBase::NavigationBase(): MavrosBase(){
 
     /* ------------------------ Parameters ------------------------ */
-    sleep(10); // Give PX4 some time to boot
+    sleep(15); // Give PX4 some time to boot
     set_param("EKF2_HGT_MODE", 3);
     set_param("EKF2_AID_MASK", 0b000011000);
     set_param("EKF2_EV_DELAY", 0.0);

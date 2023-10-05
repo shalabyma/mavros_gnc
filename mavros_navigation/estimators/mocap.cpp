@@ -29,8 +29,6 @@ void mocap_pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg){
     }
 }
 
-
-
 int main(int argc, char **argv){
     ros::init(argc, argv, "mvnav_mocap_node", ros::init_options::NoSigintHandler);
     ros::NodeHandle nh;
@@ -42,8 +40,14 @@ int main(int argc, char **argv){
     signal(SIGINT, mySigintHandler);
 
     std::string who_am_i = ros::this_node::getNamespace();
-    if (who_am_i == "/"){
-        who_am_i = "/ifo001/"; //#TODO: replace with an enforced parameter if no namespace
+    if (who_am_i == "/" && ros::param::has("/robot_id")){
+        ros::param::get("/robot_id", who_am_i);
+        who_am_i = "/" + who_am_i + "/";
+    }
+    else if (who_am_i == "/"){
+        ROS_ERROR("Could not find robot's mocap name. \
+                   No namespace nor /robot_id param. Exiting...");
+        return 1;
     }
 
     // Wait for important topics to be available
