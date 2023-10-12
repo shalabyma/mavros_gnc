@@ -46,7 +46,7 @@
     <exec_depend>mavros_base</exec_depend>
     <!-- <exec_depend>mavros_bringup</exec_depend> -->
     <exec_depend>mavros_control</exec_depend>
-    <!-- <exec_depend>mavros_guidance</exec_depend> -->
+    <exec_depend>mavros_guidance</exec_depend>
     <exec_depend>mavros_navigation</exec_depend>
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->

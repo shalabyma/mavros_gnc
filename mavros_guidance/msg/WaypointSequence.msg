@@ -1,0 +1,1 @@
+mavros_guidance/Waypoint[] sequence
