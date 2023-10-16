@@ -4,9 +4,9 @@
 #include <mavros_msgs/State.h>
 #include <geometry_msgs/PoseStamped.h>
 
-class MavrosBase{
+class GncBase{
     public: 
-        MavrosBase();
+        GncBase();
         bool arm(int n_retry=5);
         bool disarm(int n_retry=5);
         bool set_mode(std::string mode, int n_retry=5);
@@ -21,6 +21,7 @@ class MavrosBase{
         ros::NodeHandle nh; // ROS node handle
         mavros_msgs::State m_current_state; // The current state of the FCU
         geometry_msgs::PoseStamped m_pose; // The current pose of the robot
+        std::vector<std::string> m_ros_namespaces; // ROS namespaces for each robot
 
     private:
         ros::Subscriber m_pose_sub; // Subscriber to the robot pose
@@ -41,4 +42,5 @@ class MavrosBase{
         );
         bool _arm_toggle(bool arm);
         bool _kill_motors();
+        void _get_namespaces();
 };

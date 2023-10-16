@@ -11,7 +11,7 @@
 #include <tf/transform_datatypes.h>
 
 /* ------------------------ Constructor ------------------------ */
-ControllerBase::ControllerBase(): MavrosBase(){
+ControllerBase::ControllerBase(): GncBase(){
 
     set_rate(HIGHRES_IMU_ID, 250);
     set_rate(DISTANCE_SENSOR_ID, 30);

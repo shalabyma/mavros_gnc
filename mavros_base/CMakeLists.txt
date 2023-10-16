@@ -20,7 +20,7 @@ include
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-  src/MavrosBase.cpp
+  src/GncBase.cpp
 )
 
 ## Specify libraries to link a library or executable target against

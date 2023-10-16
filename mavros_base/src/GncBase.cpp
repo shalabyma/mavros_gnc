@@ -3,7 +3,7 @@
  * @brief 
  */
 
-#include "MavrosBase.h"
+#include "GncBase.h"
 #include <geometry_msgs/PoseStamped.h>
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/CommandLong.h>
@@ -12,7 +12,7 @@
 #include <mavros_msgs/ParamGet.h>
 #include <mavros_msgs/ParamSet.h>
 
-MavrosBase::MavrosBase(){
+GncBase::GncBase(){
     
     // Wait for some important topics to be published 
     ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
@@ -27,14 +27,14 @@ MavrosBase::MavrosBase(){
         "mavros/local_position/pose", 
         10, 
         boost::bind(
-            &MavrosBase::_pose_cb, boost::placeholders::_1 , boost::ref(m_pose)
+            &GncBase::_pose_cb, boost::placeholders::_1 , boost::ref(m_pose)
         )
     );
     m_state_sub = nh.subscribe<mavros_msgs::State>(
         "mavros/state", 
         10, 
         boost::bind(
-            &MavrosBase::_state_cb, boost::placeholders::_1, boost::ref(m_current_state)
+            &GncBase::_state_cb, boost::placeholders::_1, boost::ref(m_current_state)
         )
     );
 
@@ -73,11 +73,14 @@ MavrosBase::MavrosBase(){
     while(ros::ok() && !m_current_state.connected){
         ros::spinOnce();
     }
+
+    // Get all existing ROS namespaces
+    _get_namespaces();
 }
 
 // TODO: Replace with a call to a retry utils function
 // TODO: Check if already armed
-bool MavrosBase::arm(int n_retry){
+bool GncBase::arm(int n_retry){
     for (int i = 0; i < n_retry; i++){
         if (_arm_toggle(true)){
             return true;
@@ -90,7 +93,7 @@ bool MavrosBase::arm(int n_retry){
 
 // TODO: Replace with a call to a retry utils function
 // TODO: Check if already disarmed
-bool MavrosBase::disarm(int n_retry){
+bool GncBase::disarm(int n_retry){
     for (int i = 0; i < n_retry; i++){
         if (_arm_toggle(false)){
             return true;
@@ -101,7 +104,7 @@ bool MavrosBase::disarm(int n_retry){
     return false;
 }
 
-bool MavrosBase::set_mode(std::string mode, int n_retry){
+bool GncBase::set_mode(std::string mode, int n_retry){
     mavros_msgs::SetMode set_mode;
     set_mode.request.custom_mode = mode;
 
@@ -119,7 +122,7 @@ bool MavrosBase::set_mode(std::string mode, int n_retry){
     return false;
 }
 
-void MavrosBase::abort_mission(bool immediately){
+void GncBase::abort_mission(bool immediately){
     if (immediately){
         ROS_INFO("Aborting mission. Killing motors immediately!");
         _kill_motors();
@@ -134,7 +137,7 @@ void MavrosBase::abort_mission(bool immediately){
     }
 }
 
-bool MavrosBase::set_rate(int id, int rate){
+bool GncBase::set_rate(int id, int rate){
     mavros_msgs::MessageInterval msg;
     msg.request.message_id = id;
     msg.request.message_rate = rate;
@@ -147,7 +150,7 @@ bool MavrosBase::set_rate(int id, int rate){
     }
 }
 
-bool MavrosBase::get_param(std::string param_id, double& param){
+bool GncBase::get_param(std::string param_id, double& param){
     mavros_msgs::ParamGet param_get;
     param_get.request.param_id = param_id;
     if(m_get_param_srv.call(param_get)){
@@ -160,7 +163,7 @@ bool MavrosBase::get_param(std::string param_id, double& param){
     }
 }
 
-bool MavrosBase::get_param(std::string param_id, int& param){
+bool GncBase::get_param(std::string param_id, int& param){
     mavros_msgs::ParamGet param_get;
     param_get.request.param_id = param_id;
     if(m_get_param_srv.call(param_get)){
@@ -173,7 +176,7 @@ bool MavrosBase::get_param(std::string param_id, int& param){
     }
 }
 
-bool MavrosBase::set_param(std::string param_id, double param){
+bool GncBase::set_param(std::string param_id, double param){
     mavros_msgs::ParamSet param_set;
     param_set.request.param_id = param_id;
     param_set.request.value.real = param;
@@ -186,7 +189,7 @@ bool MavrosBase::set_param(std::string param_id, double param){
     }
 }
 
-bool MavrosBase::set_param(std::string param_id, int param){
+bool GncBase::set_param(std::string param_id, int param){
     mavros_msgs::ParamSet param_set;
     param_set.request.param_id = param_id;
     param_set.request.value.integer = param;
@@ -200,20 +203,20 @@ bool MavrosBase::set_param(std::string param_id, int param){
 }
 
 /* ------------------------ Private methods ------------------------ */
-void MavrosBase::_pose_cb(
+void GncBase::_pose_cb(
     const geometry_msgs::PoseStamped::ConstPtr& msg, 
     geometry_msgs::PoseStamped& pose
 ){
     pose = *msg;
 }
 
-void MavrosBase::_state_cb(
+void GncBase::_state_cb(
     const mavros_msgs::State::ConstPtr& msg, mavros_msgs::State& state
 ){
     state = *msg;
 }
 
-bool MavrosBase::_arm_toggle(bool arm){
+bool GncBase::_arm_toggle(bool arm){
     mavros_msgs::CommandBool arm_cmd;
     arm_cmd.request.value = arm;
 
@@ -232,7 +235,7 @@ bool MavrosBase::_arm_toggle(bool arm){
     }
 }
 
-bool MavrosBase::_kill_motors(){
+bool GncBase::_kill_motors(){
     mavros_msgs::CommandLong cmd;
     cmd.request.broadcast = false;
     cmd.request.command = 400;
@@ -250,5 +253,16 @@ bool MavrosBase::_kill_motors(){
     }else{
         ROS_ERROR("Failed at killing motors.");
         return false;
+    }
+}
+
+void GncBase::_get_namespaces(){
+    ros::master::V_TopicInfo master_topics;
+    ros::master::getTopics(master_topics);
+    for (ros::master::V_TopicInfo::iterator it = master_topics.begin() ; it != master_topics.end(); it++){
+        std::string ns = it->name.substr(1, it->name.find_last_of("/"));
+        if (std::find(m_ros_namespaces.begin(), m_ros_namespaces.end(), ns) == m_ros_namespaces.end()){
+            m_ros_namespaces.push_back(ns);
+        }
     }
 }

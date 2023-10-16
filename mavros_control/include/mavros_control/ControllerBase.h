@@ -1,4 +1,4 @@
-#include "MavrosBase.h"
+#include "GncBase.h"
 #include <mavros_msgs/PositionTarget.h>
 #include <boost/thread.hpp>
 
@@ -8,7 +8,7 @@
 #define ATTITUDE_ID 30
 #define ATTITUDE_QUATERNION_ID 31
 
-class ControllerBase: public MavrosBase{
+class ControllerBase: public GncBase{
 public:
     ControllerBase();
 

@@ -5,10 +5,10 @@
  * #TODO:
  * 1) Should add subscribers and "get" methods for common mavros sensor topics 
  */
-#include "MavrosBase.h"
+#include "GncBase.h"
 #include <geometry_msgs/PoseStamped.h>
 
-class NavigationBase: public MavrosBase{
+class NavigationBase: public GncBase{
 public:
     NavigationBase();
     ~NavigationBase();

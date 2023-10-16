@@ -1,6 +1,6 @@
 #include "NavigationBase.h"
 
-NavigationBase::NavigationBase(): MavrosBase(){
+NavigationBase::NavigationBase(): GncBase(){
 
     /* ------------------------ Parameters ------------------------ */
     sleep(15); // Give PX4 some time to boot
