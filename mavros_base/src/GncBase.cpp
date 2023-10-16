@@ -257,12 +257,36 @@ bool GncBase::_kill_motors(){
 }
 
 void GncBase::_get_namespaces(){
+    // This checks if there are any prefixes to /mavros topics, and adds them to
+    // the list of ROS namespaces. This is useful for multi-robot simulations.
+    // IF there are no prefixes, then the list will only contain the empty string.
+
     ros::master::V_TopicInfo master_topics;
     ros::master::getTopics(master_topics);
-    for (ros::master::V_TopicInfo::iterator it = master_topics.begin() ; it != master_topics.end(); it++){
-        std::string ns = it->name.substr(1, it->name.find_last_of("/"));
-        if (std::find(m_ros_namespaces.begin(), m_ros_namespaces.end(), ns) == m_ros_namespaces.end()){
-            m_ros_namespaces.push_back(ns);
+
+    for (ros::master::V_TopicInfo::iterator it = master_topics.begin(); it != master_topics.end(); it++){
+        std::string topic = *(&(it->name));
+        std::string delimiter = "/";
+        size_t pos = 0;
+        std::string token;
+        std::vector<std::string> tokens;
+
+        topic.erase(0, 1); // Remove the first slash
+        while ((pos = topic.find(delimiter)) != std::string::npos) {
+            token = topic.substr(0, pos);
+            tokens.push_back(token);
+            topic.erase(0, pos + delimiter.length());
+        }
+        tokens.push_back(topic);
+
+        if (tokens.size() >= 2 && tokens[1] == "mavros") {
+            std::string ns = tokens[0];
+            if (std::find(m_ros_namespaces.begin(), m_ros_namespaces.end(), ns) == m_ros_namespaces.end()){
+                ROS_INFO("Found mavros namespace: %s", tokens[0].c_str());
+                m_ros_namespaces.push_back(ns);
+            }
         }
     }
+
+    ROS_INFO("Found a total of %lu ROS namespaces.", m_ros_namespaces.size());
 }

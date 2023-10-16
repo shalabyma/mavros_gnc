@@ -39,6 +39,7 @@ int main(int argc, char **argv){
 
     signal(SIGINT, mySigintHandler);
 
+    // TODO: move this inside the GncBase class so it can be used by other nodes
     std::string who_am_i = ros::this_node::getNamespace();
     if (who_am_i == "/" && ros::param::has("/robot_id")){
         ros::param::get("/robot_id", who_am_i);
