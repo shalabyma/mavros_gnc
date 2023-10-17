@@ -14,6 +14,7 @@ GuidanceBase::GuidanceBase(){
 
     /* ------------------------ Subscribers ------------------------ */
     // TODO: maybe move this to GncBase and have a bool whether or not to subscribe
+    // TODO: for example, this should be turned off whenever there is only one robot
     // TODO: should we merge this with the pose subscriber in GncBase?
     // Subscribe to the poses of all robots
     for (int i = 0; i < m_ros_namespaces.size(); i++){
@@ -23,10 +24,9 @@ GuidanceBase::GuidanceBase(){
                 topic, 
                 5, 
                 boost::bind(
-                    &GuidanceBase::_all_pose_cb, 
+                    &GncBase::_pose_cb, 
                     boost::placeholders::_1, 
-                    boost::ref(m_pose_all), 
-                    i
+                    boost::ref(m_pose_all[i])
                 )
             )
         );
@@ -40,10 +40,3 @@ GuidanceBase::GuidanceBase(){
 }
 
 /* ------------------------ Private methods ------------------------ */
-void GuidanceBase::_all_pose_cb(
-    const geometry_msgs::PoseStamped::ConstPtr& msg, 
-    std::vector<geometry_msgs::PoseStamped>& pose_all, 
-    int i
-){
-    pose_all[i] = *msg;
-}

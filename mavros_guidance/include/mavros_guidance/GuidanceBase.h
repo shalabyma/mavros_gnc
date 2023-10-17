@@ -13,17 +13,12 @@ protected:
     bool m_nearby_robot = false; // True if another robot is nearby
 
     // Poses of all robots
-    std::vector<geometry_msgs::PoseStamped> m_pose_all;
+    std::vector<geometry_msgs::PoseStamped> m_pose_all = \
+        std::vector<geometry_msgs::PoseStamped>(m_ros_namespaces.size());
 
 private:
     // Subscribers to poses of all robots
     std::vector<ros::Subscriber> m_pose_subscribers;
-    
-    static void _all_pose_cb(
-        const geometry_msgs::PoseStamped::ConstPtr& msg, 
-        std::vector<geometry_msgs::PoseStamped>& pose_all, 
-        int i
-    );
 
     void _collision_avoidance();
     void _check_proximity();

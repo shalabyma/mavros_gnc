@@ -11,5 +11,13 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "planner");
     GuidanceBase planner;
     // void _stream_waypoints(mavros_guidance::WaypointSequence waypoint_seq);
+
+    ROS_INFO("Spinning now...");
+    ros::Rate rate(1.0);
+    while (!ros::isShuttingDown()){
+        // Spin and sleep
+        ros::spinOnce();
+        rate.sleep();
+    }
     return 0;
 }

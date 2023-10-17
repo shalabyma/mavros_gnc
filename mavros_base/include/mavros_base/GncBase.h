@@ -23,6 +23,11 @@ class GncBase{
         geometry_msgs::PoseStamped m_pose; // The current pose of the robot
         std::vector<std::string> m_ros_namespaces; // ROS namespaces for each robot
 
+        static void _pose_cb(
+            const geometry_msgs::PoseStamped::ConstPtr& msg, 
+            geometry_msgs::PoseStamped& pose
+        );
+
     private:
         ros::Subscriber m_pose_sub; // Subscriber to the robot pose
         ros::Subscriber m_state_sub; // Subscriber to the FCU state
@@ -33,10 +38,6 @@ class GncBase{
         ros::ServiceClient m_get_param_srv; // Service client for getting parameters
         ros::ServiceClient m_set_param_srv; // Service client for setting parameters
 
-        static void _pose_cb(
-            const geometry_msgs::PoseStamped::ConstPtr& msg, 
-            geometry_msgs::PoseStamped& pose
-        );
         static void _state_cb(
             const mavros_msgs::State::ConstPtr& msg, mavros_msgs::State& state
         );
