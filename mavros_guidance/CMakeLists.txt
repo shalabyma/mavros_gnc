@@ -42,7 +42,7 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 
 ## Declare a C++ executable
 add_executable(mvguide_waypoint_node 
-  planners/waypoints.cpp
+  planners/stream_waypoints.cpp
 )
 
 # Specify libraries to link a library or executable target against
