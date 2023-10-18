@@ -43,24 +43,32 @@ int main(int argc, char **argv){
     std::string who_am_i = ros::this_node::getNamespace();
     if (who_am_i == "/" && ros::param::has("/robot_id")){
         ros::param::get("/robot_id", who_am_i);
-        who_am_i = "/" + who_am_i + "/";
     }
     else if (who_am_i == "/"){
         ROS_ERROR("Could not find robot's mocap name. \
                    No namespace nor /robot_id param. Exiting...");
         return 1;
     }
+    else{
+        who_am_i = who_am_i.substr(1, who_am_i.size());
+    }
+
+
+    ROS_INFO("Waiting for Mocap.");
+    ROS_INFO("Robot name: %s", who_am_i.c_str());
 
     // Wait for important topics to be available
     ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
-        "vrpn_client_node" + who_am_i + "pose"
+        "vrpn_client_node/" + who_am_i + "/pose"
     );
 
     // Subscribe to the mocap pose
     ros::Subscriber mocap_sub = nh.subscribe<geometry_msgs::PoseStamped>(
-        "vrpn_client_node" + who_am_i + "pose", 10, mocap_pose_cb
+        "vrpn_client_node/" + who_am_i + "/pose", 10, mocap_pose_cb
     );
     sleep(1);
+
+    ROS_INFO("Mocap node ready.");
 
     // Set the rate
     ros::Rate rate(50.0);
