@@ -21,6 +21,6 @@ private:
     std::vector<ros::Subscriber> m_pose_subscribers;
 
     void _collision_avoidance();
-    void _check_proximity();
-    void _compute_distance();
+    static bool _check_proximity(geometry_msgs::PoseStamped pose1, 
+                                 geometry_msgs::PoseStamped pose2);
 };

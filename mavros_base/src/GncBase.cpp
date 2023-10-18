@@ -23,6 +23,11 @@ GncBase::GncBase(){
     );
 
     /* ------------------------ Subscribers ------------------------ */
+    // TODO: the pose might could be shared among all instances of GncBase
+    //       this can easily be done by having the subscriber as a static
+    //       variable. OR by having a static private counter for the 
+    //       number of instances and only give the first instance the 
+    //       duty of subscribing to the pose topic and updating the pose
     m_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>(
         "mavros/local_position/pose", 
         10, 
@@ -74,6 +79,7 @@ GncBase::GncBase(){
         ros::spinOnce();
     }
 
+    // TODO: this should be done once and shared among all instances of GncBase
     // Get all existing ROS namespaces
     _get_namespaces();
 }

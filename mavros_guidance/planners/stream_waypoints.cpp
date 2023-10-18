@@ -14,8 +14,7 @@ int main(int argc, char **argv){
 
     ROS_INFO("Spinning now...");
     ros::Rate rate(1.0);
-    while (!ros::isShuttingDown()){
-        // Spin and sleep
+    while (!ros::isShuttingDown()){        
         ros::spinOnce();
         rate.sleep();
     }
