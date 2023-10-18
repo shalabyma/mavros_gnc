@@ -1,6 +1,5 @@
 #include "GncBase.h"
 #include <mavros_msgs/PositionTarget.h>
-#include <boost/thread.hpp>
 
 // Mavlink message IDs
 #define HIGHRES_IMU_ID 105
@@ -25,7 +24,6 @@ protected:
 
 private:
     ros::Publisher m_setpoint_pub;
-    boost::thread setpoint_thread;
 
     void _stream_setpoints();
 };

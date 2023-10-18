@@ -9,6 +9,7 @@
 #include "ControllerBase.h"
 #include <std_msgs/Header.h>
 #include <tf/transform_datatypes.h>
+#include <boost/thread.hpp>
 
 /* ------------------------ Constructor ------------------------ */
 ControllerBase::ControllerBase(): GncBase(){
@@ -29,7 +30,8 @@ ControllerBase::ControllerBase(): GncBase(){
 
     /* ------------------------ Start thread ------------------------ */
     command_vel(0, 0, 0, 0);
-    setpoint_thread = boost::thread(&ControllerBase::_stream_setpoints, this);
+    boost::thread setpoint_thread = \
+                boost::thread(&ControllerBase::_stream_setpoints, this);
 
     // Allow some setpoint commands so OFFBOARD mode is accepted
     ros::topic::waitForMessage<mavros_msgs::PositionTarget>(
