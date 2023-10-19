@@ -71,8 +71,10 @@ void GuidanceBase::_collision_avoidance(){
     }
 }
 
-bool GuidanceBase::_check_proximity(geometry_msgs::PoseStamped pose1, 
-                                    geometry_msgs::PoseStamped pose2){
+bool GuidanceBase::_check_proximity(
+    const geometry_msgs::PoseStamped& pose1, 
+    const geometry_msgs::PoseStamped& pose2
+){
     // make the proximity threshold a user-defined argument
     double proximity_threshold = 0.75;
     double dx = pose1.pose.position.x - pose2.pose.position.x;

@@ -25,6 +25,8 @@ private:
     ros::Publisher m_nearby_robot_pub;
 
     void _collision_avoidance();
-    static bool _check_proximity(geometry_msgs::PoseStamped pose1, 
-                                 geometry_msgs::PoseStamped pose2);
+    static bool _check_proximity(
+        const geometry_msgs::PoseStamped& pose1, 
+        const geometry_msgs::PoseStamped& pose2
+    );
 };
