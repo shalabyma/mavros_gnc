@@ -13,7 +13,6 @@
 #include <mavros_msgs/ParamSet.h>
 
 GncBase::GncBase(){
-    
     // Wait for some important topics to be published 
     ros::topic::waitForMessage<geometry_msgs::PoseStamped>(
         "mavros/local_position/pose"

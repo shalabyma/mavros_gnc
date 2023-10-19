@@ -20,7 +20,7 @@ GuidanceBase::GuidanceBase(){
     // TODO: should we merge this with the pose subscriber in GncBase?
     // Subscribe to the poses of all robots
     for (int i = 0; i < m_ros_namespaces.size(); i++){
-        std::string topic = "/" + m_ros_namespaces[i] + "/mavros/local_position/pose";
+        std::string topic = "vrpn_client_node/" + m_ros_namespaces[i] + "/pose";
         m_pose_subscribers.push_back(
             nh.subscribe<geometry_msgs::PoseStamped>(
                 topic, 
@@ -63,6 +63,8 @@ void GuidanceBase::_collision_avoidance(){
             m_nearby_robot.data = false;
         }
 
+        // TODO: maybe instead of just publishing a boolean we should publish a
+        //       custom message with the ID of the nearby robot and the distance
         // Publish the nearby robot boolean
         m_nearby_robot_pub.publish(m_nearby_robot);
 
@@ -82,11 +84,9 @@ bool GuidanceBase::_check_proximity(
     double dz = pose1.pose.position.z - pose2.pose.position.z;
     double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
-    ROS_INFO("Distance computed: %f", distance);
-
     // TODO: remove the poses of the current robot so we do not need to check
-    //       for the case where the distance is 0.0
-    if ((distance < proximity_threshold) && (distance != 0.0)){
+    //       for the case where the distance is <0.05
+    if ((distance < proximity_threshold) && (distance > 0.05)){
         return true;
     }
     else{
