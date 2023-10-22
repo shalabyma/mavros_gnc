@@ -80,7 +80,7 @@ bool GuidanceBase::_check_proximity(
     const geometry_msgs::PoseStamped& pose2
 ){
     // make the proximity threshold a user-defined argument
-    double proximity_threshold = 0.75;
+    double proximity_threshold = 1;
     double dx = pose1.pose.position.x - pose2.pose.position.x;
     double dy = pose1.pose.position.y - pose2.pose.position.y;
     double distance = sqrt(dx*dx + dy*dy);

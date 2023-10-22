@@ -1,5 +1,6 @@
 #include "GncBase.h"
 #include <mavros_msgs/PositionTarget.h>
+#include <std_msgs/Bool.h>
 
 // Mavlink message IDs
 #define HIGHRES_IMU_ID 105
@@ -24,6 +25,13 @@ protected:
 
 private:
     ros::Publisher m_setpoint_pub;
+    ros::Subscriber m_collision_avoidance_sub;
+
+    bool m_nearby_robot = false;
 
     void _stream_setpoints();
+    static void _collision_avoidance_cb(
+        const std_msgs::Bool::ConstPtr& msg, 
+        bool& nearby_robot
+    );
 };

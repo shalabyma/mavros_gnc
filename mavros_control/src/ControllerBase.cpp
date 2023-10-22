@@ -20,6 +20,15 @@ ControllerBase::ControllerBase(): GncBase(){
     set_rate(ATTITUDE_QUATERNION_ID, 10);
 
     /* ------------------------ Subscribers ------------------------ */
+    m_collision_avoidance_sub = nh.subscribe<std_msgs::Bool>(
+        "guidance/nearby_robot", 
+        1, 
+        boost::bind(
+            &ControllerBase::_collision_avoidance_cb, 
+            boost::placeholders::_1, 
+            boost::ref(m_nearby_robot)
+        )
+    );
 
     /* ------------------------ Publishers ------------------------ */
     m_setpoint_pub = nh.advertise<mavros_msgs::PositionTarget>
@@ -136,13 +145,29 @@ bool ControllerBase::hold_position(){
 
 /* ------------------------ Private methods ------------------------ */
 void ControllerBase::_stream_setpoints(){
+    mavros_msgs::PositionTarget m_setpoint_old;
     ros::Rate rate = ros::Rate(50);
     m_setpoint.header = std_msgs::Header();
     m_setpoint.header.frame_id = "base_footprint";
     while(!ros::isShuttingDown()){
         m_setpoint.header.stamp = ros::Time::now();
+        while (!ros::isShuttingDown() && m_nearby_robot){
+            m_setpoint_old = m_setpoint;
+            hold_position();
+            m_setpoint_pub.publish(m_setpoint);
+            m_setpoint = m_setpoint_old;
+            ros::spinOnce();
+            rate.sleep();
+        }
         m_setpoint_pub.publish(m_setpoint);
         ros::spinOnce();
         rate.sleep();
     }
+}
+
+void ControllerBase::_collision_avoidance_cb(
+    const std_msgs::Bool::ConstPtr& msg, 
+    bool& nearby_robot
+){
+    nearby_robot = msg->data;
 }
