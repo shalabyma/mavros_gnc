@@ -9,10 +9,10 @@ GuidanceBase::GuidanceBase(){
     );
 
     /* ------------------------ Publishers ------------------------ */
-    m_waypoint_pub = nh.advertise<mavros_guidance::Waypoint>("waypoint", 3);
+    m_waypoint_pub = nh.advertise<mavros_guidance::Waypoint>("guidance/waypoint", 3);
     m_waypoint_seq_pub = \
-        nh.advertise<mavros_guidance::WaypointSequence>("waypoint_sequence", 1);
-    m_nearby_robot_pub = nh.advertise<std_msgs::Bool>("nearby_robot", false);
+        nh.advertise<mavros_guidance::WaypointSequence>("guidance/waypoint_sequence", 1);
+    m_nearby_robot_pub = nh.advertise<std_msgs::Bool>("guidance/nearby_robot", 1, true);
 
     /* ------------------------ Subscribers ------------------------ */
     // TODO: maybe move this to GncBase and have a bool whether or not to subscribe
@@ -47,26 +47,28 @@ GuidanceBase::GuidanceBase(){
 void GuidanceBase::_collision_avoidance(){
     bool found_nearby_robot = false;
     ros::Rate rate(20.0);
+    m_nearby_robot.data = false;
+    m_nearby_robot_pub.publish(m_nearby_robot);
     while (!ros::isShuttingDown()){
         found_nearby_robot = false;
-        ROS_INFO("Number of poses: %d", m_pose_all.size());
         for (int i = 0; i < m_pose_all.size(); i++){
             if (_check_proximity(m_pose, m_pose_all[i])){
                 found_nearby_robot = true;
                 break;
             };
         }
-        if (found_nearby_robot){
-            m_nearby_robot.data = true;
-        }
-        else{
-            m_nearby_robot.data = false;
-        }
 
         // TODO: maybe instead of just publishing a boolean we should publish a
         //       custom message with the ID of the nearby robot and the distance
         // Publish the nearby robot boolean
-        m_nearby_robot_pub.publish(m_nearby_robot);
+        if (found_nearby_robot && !m_nearby_robot.data){
+            m_nearby_robot.data = true;
+            m_nearby_robot_pub.publish(m_nearby_robot);
+        }
+        else if (!found_nearby_robot && m_nearby_robot.data){
+            m_nearby_robot.data = false;
+            m_nearby_robot_pub.publish(m_nearby_robot);
+        }
 
         ros::spinOnce();
         rate.sleep();
@@ -81,8 +83,7 @@ bool GuidanceBase::_check_proximity(
     double proximity_threshold = 0.75;
     double dx = pose1.pose.position.x - pose2.pose.position.x;
     double dy = pose1.pose.position.y - pose2.pose.position.y;
-    double dz = pose1.pose.position.z - pose2.pose.position.z;
-    double distance = sqrt(dx*dx + dy*dy + dz*dz);
+    double distance = sqrt(dx*dx + dy*dy);
 
     // TODO: remove the poses of the current robot so we do not need to check
     //       for the case where the distance is <0.05
